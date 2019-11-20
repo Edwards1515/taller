@@ -1,7 +1,7 @@
 var router = require('express').Router();
 const Restaurantes = require('../modelos/Restaurantes');
 const Promociones = require('../modelos/Promociones');
-
+var sumatoria = 0;
 
 
 //REQ 1 Obtener todas las promociones vigentes (que no han cumplido su fecha de expiración) PENDIENTE
@@ -9,9 +9,15 @@ router.get('/obtener/PromocionesVigentes', async (req, res) => {
     let fechaActual = new Date();
     Promociones.find({fechaExpiracion : {$gt: new Date(fechaActual)}})
         .then((LasPromociones) => {
-            
+            sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].estado === true){
+                sumatoria = sumatoria +1;
+            }
+            }           
            res.json({
                 "status": "ok",
+                "Registros":sumatoria,
                 "nodo":LasPromociones
             });
         })
@@ -26,12 +32,44 @@ router.get('/obtener/PromocionesVigentes', async (req, res) => {
 //REQ 2 Obtener las cinco promociones Premium más recientes LISTO
 router.get('/obtener/PromocionesPremium', async (req, res) => {
 
-    Promociones.find({premium:true}).limit(5)
+    Promociones.find({premium:true}).sort({premium:1}).limit(5)
     .then((LasPromociones) => {
-        
-        
+        sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].premium === true){
+                sumatoria = sumatoria +1;
+            }
+            }
        res.json({
             "status": "ok",
+            "Registros":sumatoria,
+            "nodo":LasPromociones
+
+        });
+    })
+    .catch((err) => {
+        res.json({
+            "status": "fail",
+            "error": err
+        });
+    });
+
+});
+//REQ 2.1 Obtener las promociones Premium más recientes (cantidad por Url) LISTO
+router.get('/obtener/PromocionesPremium/:valor', async (req, res) => {
+
+    let valor = parseInt(req.params.valor);
+    Promociones.find({premium:true}).limit(valor)
+    .then((LasPromociones) => {
+        sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].premium === true){
+                sumatoria = sumatoria + 1;
+            }
+            }
+       res.json({
+            "status": "ok",
+            "Registros":sumatoria,
             "nodo":LasPromociones
 
         });
@@ -48,12 +86,18 @@ router.get('/obtener/PromocionesPremium', async (req, res) => {
 //REQ 3 Obtener las promociones próximas a expirar (usted define el criterio de proximidad) FALTANTE 
 router.get('/obtener/PromocionesPoExpirar/:cantidad', async (req, res) => {
     let fechaActual = new Date();
-    let cantidad = req.params.cantidad; 
-    Promociones.find({fechaExpiracion : {$gt: new Date(fechaActual)}}).limit(cantidad)
+    let cantidad = parseInt(req.params.cantidad); 
+    Promociones.find({fechaExpiracion : {$gt: new Date(fechaActual)},estado:true}).limit(cantidad)
         .then((LasPromociones) => {
-            
+            sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].estado === true){
+                sumatoria = sumatoria + 1;
+            }
+            }
            res.json({
                 "status": "ok",
+                "Registros":sumatoria,
                 "nodo":LasPromociones
             });
         })
@@ -79,8 +123,8 @@ router.get('/obtener/info/unaPromocion/:id', async (req, res) => {
             
             res.json({
                 "status": "ok",
-                Restaurante: Restaurant,
-                Promocion: PromocionTarget
+                Promocion: PromocionTarget,
+                Restaurante: Restaurant
                 
             });
         })
@@ -98,12 +142,17 @@ router.get('/obtener/PromocionesMismoRestaurante/:id', async (req, res) => {
     let idTarget = req.params.id;
     Promociones.find({idRestaurante:idTarget})
         .then((LasPromociones) => {
-
+            sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].estado === true || LasPromociones[i].estado === false) {
+                sumatoria = sumatoria + 1;
+            }
+            }
             res.json({
                 "status": "ok",
+                "Canridad de Promociones":sumatoria,
                 "Nodo": LasPromociones
-
-                
+   
             });
         })
         .catch((err) => {
@@ -166,7 +215,7 @@ router.post('/crearPromocion', async (req, res) => {
 });
 
 //REQ 8 Actualizar un solo campo a la vez de restaurantes LISTO
-router.put('/actualizar/DatoDeRestaurante/:id', async (req, res) => {
+router.put('/actualizar/DatoDeUnRestaurante/:id', async (req, res) => {
 
     Restaurantes.findByIdAndUpdate(req.params.id,
         req.body.queryUpdate)
@@ -207,10 +256,10 @@ router.put('/actualizar/unDatoDePromo/:id', async (req, res) => {
 
 });
 
-//Desactivar (o eliminar) una promoción existente
+//Desactivar (o eliminar) una restaurante existente
 router.put('/desactivar/restaurante/:id', async (req, res) => {
-
-    Restaurantes.update({id: req.params.id },{$set: { estado : false } })
+    let idTarget = req.params.id;
+    Restaurantes.findByIdAndUpdate(idTarget,{ estado : false })
         .then(() => {
             res.json({
                 "status": "ok",
@@ -225,6 +274,23 @@ router.put('/desactivar/restaurante/:id', async (req, res) => {
         });
 
 
+});
+
+//Desactivar (o eliminar) una promoción existente
+router.put('/desactivar/promocion/:id', async (req, res) => {
+    Promociones.findByIdAndUpdate(idTarget,{ estado : false })
+        .then(() => {
+            res.json({
+                "status": "ok",
+
+        });
+        })
+        .catch((err) => {
+            res.json({
+                "status": "fail",
+                "error": err
+            });
+        });
 });
 
 
@@ -295,12 +361,6 @@ router.get('/obtenerPromocionPorNombre', async (req, res) => {
         });
 
 });
-
-
-
-
-
-
 
 
 module.exports = router;
