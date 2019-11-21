@@ -8,8 +8,16 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Edwards1515/taller.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Edwards1515/taller/issues"
+  },
+  "homepage": "https://github.com/Edwards1515/taller#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
