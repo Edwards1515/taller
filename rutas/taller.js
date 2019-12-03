@@ -1,6 +1,6 @@
 var router = require('express').Router();
-const Restaurantes = require('../modelos/Restaurantes');
-const Promociones = require('../modelos/Promociones');
+const Restaurantes = require('../modelos/Restaurantes.js');
+const Promociones = require('../modelos/Promociones.js');
 var sumatoria = 0;
 
 
