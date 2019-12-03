@@ -17,7 +17,7 @@ app.use(cors({
   //   }
   // },
   origin: "*",
-  methods: ["GET", "POST", "PATCH", "PUT", "DETELE"],
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   exposedHeaders: ["Content-Type"],
   optionsSuccessStatus: 200
 }));
