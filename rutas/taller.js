@@ -307,7 +307,7 @@ router.get('/obtenerTodosLosRestaurantes', async (req, res) => {
     Restaurantes.find()
         .then((losNodos) => {
             res.json({
-                "status": "ok",
+                
                 "Restaurantes": losNodos
             });
         })
