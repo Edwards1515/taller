@@ -153,8 +153,7 @@ router.get('/obtener/PromocionesMismoRestaurante/:id', async (req, res) => {
             }
             }
             res.json({
-                "status": "ok",
-                "Canridad de Promociones":sumatoria,
+               
                 "Nodo": LasPromociones,
                 "Restaurante":Restaurant
    
