@@ -170,6 +170,40 @@ router.get('/obtener/PromocionesMismoRestaurante/:id', async (req, res) => {
 
 });
 
+//REQ 5 Obtener todas las promociones de un mismo restaurante LISTO
+router.get('/obtener/TodasPromocionesMismoRestaurante', async (req, res) => {
+    let idTarget = req.params.id;
+    
+     Restaurantes.findById()
+            .then((Restaurant) => {
+    Promociones.find({idRestaurante:Restaurant._id})
+        .then((LasPromociones) => {
+
+
+            sumatoria = null;
+            for(i=0; i < LasPromociones.length; i++){
+            if(LasPromociones[i].estado === true || LasPromociones[i].estado === false) {
+                sumatoria = sumatoria + 1;
+            }
+            }
+            res.json({
+                "status": "ok",
+                "Canridad de Promociones":sumatoria,
+                "Nodo": LasPromociones,
+                "Restaurante":Restaurant
+   
+            });
+        })
+        })
+        .catch((err) => {
+            res.json({
+                "status": "fail",
+                "error": err
+            });
+        });
+
+});
+
 //REQ 6 Crear un nuevo restaurante de pautas LISTO
 router.post('/crear/nuevoRestaurante', async (req, res) => {
     let miNuevoRestaurante = new Restaurantes({
