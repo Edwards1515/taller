@@ -368,7 +368,6 @@ router.get('/obtenerTodosLasPromociones', async (req, res) => {
                 "error": err
             });
         });
-
 });
 //Obtener Restaurante po ID
 router.get('/obtenerRestaurantesPorId/:id', async (req, res) => {
